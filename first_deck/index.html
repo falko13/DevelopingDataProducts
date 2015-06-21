@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Titanic survival probability prediction</title>
+  <meta charset="utf-8">
+  <meta name="description" content="Titanic survival probability prediction">
+  <meta name="author" content="PluzhnikovD">
+  <meta name="generator" content="slidify" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/default.css" media="all" >
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/phone.css" 
+    media="only screen and (max-device-width: 480px)" >
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/slidify.css" >
+  <link rel="stylesheet" href="libraries/highlighters/highlight.js/css/tomorrow.css" />
+  <base target="_blank"> <!-- This amazingness opens all links in a new tab. -->  <link rel=stylesheet href="./assets/css/ribbons.css"></link>
+
+  
+  <!-- Grab CDN jQuery, fall back to local if offline -->
+  <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.min.js"></script>
+  <script>window.jQuery || document.write('<script src="libraries/widgets/quiz/js/jquery.js"><\/script>')</script> 
+  <script data-main="libraries/frameworks/io2012/js/slides" 
+    src="libraries/frameworks/io2012/js/require-1.0.8.min.js">
+  </script>
+  
+  
+
+</head>
+<body style="opacity: 0">
+  <slides class="layout-widescreen">
+    
+    <!-- LOGO SLIDE -->
+        <slide class="title-slide segue nobackground">
+  <hgroup class="auto-fadein">
+    <h1>Titanic survival probability prediction</h1>
+    <h2></h2>
+    <p>PluzhnikovD<br/>Coursera Data Science project</p>
+  </hgroup>
+  <article></article>  
+</slide>
+    
+
+    <!-- SLIDES -->
+    <slide class="" id="slide-1" style="background:;">
+  <hgroup>
+    <h2>What is Titanic survival probability prediction?</h2>
+  </hgroup>
+  <article data-timings="">
+    <ol>
+<li>Titanic survival probability prediction is a tool that implies logistic regression model
+to calculate the probability of survival for a passenger of Titanic on the basis 
+of passenger`s personal features.</li>
+<li>User may change any of 4 features utilized by the model to investigate how those could affect the probablity of
+survival.</li>
+<li>4 features possible to change are: <strong>Gender</strong>, <strong>Passenger Class</strong>, <strong>Age</strong> and <strong>Ticket Price</strong>. All of those are changeable
+through slider bar or radio button.</li>
+<li>Tool is hosted on the shiny server, <a href="http://pluzhnikovd.shinyapps.io/Ass1">here</a></li>
+</ol>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Interface</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>Tool interface:<br>
+<img src="C:/Users/Tamagoch/Desktop/Git/DataProducts/Ass1/first_deck/assets/img/scr2.png" alt=""><br>
+Interface divided into Left sibebar for inputs and Right sidebar for result output</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Data used</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>Data used for the project came out of <a href="http://lib.stat.cmu.edu/S/Harrell/data/descriptions/titanic.html">here</a>.
+Code for data load was adapted to be used on shiny server.
+Data was cleaned and sampled into 70% for the model, though sampling in this version is meaningless and wasnt used.</p>
+
+<p>For demonstration purpose, lets complete single prediction. We start with data preparation</p>
+
+<pre><code class="r">library(caret); library(dplyr)
+wd.datapath = paste0(getwd(),&quot;/Data&quot;); 
+wd.init = getwd(); 
+setwd(wd.datapath)
+titanic = read.csv(&quot;titanic3.csv&quot;, header = TRUE); 
+setwd(wd.init)
+titanic&lt;-mutate(titanic,survived = as.factor(survived))[!is.na(titanic$age)&amp;!is.na(titanic$fare),]
+
+randx = 838 
+set.seed(seed = randx)
+in_train&lt;-createDataPartition(y = titanic$survived,p=0.7,list=F)
+train_set&lt;-titanic[in_train,]
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Model and prediction</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>For model used binomial glm. And for prediction we will use the same input parameters as shown on &quot;Interface&quot; slide:</p>
+
+<pre><code class="r">model&lt;-glm(data=train_set,survived~sex+age+pclass+fare,family = binomial(link=&quot;logit&quot;))
+newdata&lt;-data.frame(age=25,sex=&quot;male&quot;,pclass=&quot;1st&quot;,fare=100)
+</code></pre>
+
+<p>And result as shown:</p>
+
+<pre><code class="r">paste(round(plogis(predict(model,newdata))*100,2),&quot;%&quot;)
+</code></pre>
+
+<pre><code>## [1] &quot;57.35 %&quot;
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+    <slide class="backdrop"></slide>
+  </slides>
+  <div class="pagination pagination-small" id='io2012-ptoc' style="display:none;">
+    <ul>
+      <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=1 title='What is Titanic survival probability prediction?'>
+         1
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=2 title='Interface'>
+         2
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=3 title='Data used'>
+         3
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=4 title='Model and prediction'>
+         4
+      </a>
+    </li>
+  </ul>
+  </div>  <!--[if IE]>
+    <script 
+      src="http://ajax.googleapis.com/ajax/libs/chrome-frame/1/CFInstall.min.js">  
+    </script>
+    <script>CFInstall.check({mode: 'overlay'});</script>
+  <![endif]-->
+</body>
+  <!-- Load Javascripts for Widgets -->
+  
+  <!-- LOAD HIGHLIGHTER JS FILES -->
+  <script src="libraries/highlighters/highlight.js/highlight.pack.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script>
+  <!-- DONE LOADING HIGHLIGHTER JS FILES -->
+   
+  </html>

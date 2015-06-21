@@ -1,0 +1,68 @@
+---
+title       : Titanic survival probability prediction
+subtitle    : 
+author      : PluzhnikovD
+job         : Coursera Data Science project
+framework   : io2012        # {io2012, html5slides, shower, dzslides, ...}
+highlighter : highlight.js  # {highlight.js, prettify, highlight}
+hitheme     : tomorrow      # 
+widgets     : []            # {mathjax, quiz, bootstrap}
+mode        : selfcontained # {standalone, draft}
+knit        : slidify::knit2slides
+---
+
+## What is Titanic survival probability prediction?
+
+1. Titanic survival probability prediction is a tool that implies logistic regression model
+to calculate the probability of survival for a passenger of Titanic on the basis 
+of passenger`s personal features.
+2. User may change any of 4 features utilized by the model to investigate how those could affect the probablity of
+survival.
+3. 4 features possible to change are: **Gender**, **Passenger Class**, **Age** and **Ticket Price**. All of those are changeable
+through slider bar or radio button.
+4. Tool is hosted on the shiny server, [here](http://pluzhnikovd.shinyapps.io/Ass1)
+
+--- .class #id 
+
+## Interface
+Tool interface:  
+![](C:/Users/Tamagoch/Desktop/Git/DataProducts/Ass1/first_deck/assets/img/scr2.png)  
+Interface divided into Left sibebar for inputs and Right sidebar for result output
+
+--- .class #id 
+
+## Data used
+Data used for the project came out of [here](http://lib.stat.cmu.edu/S/Harrell/data/descriptions/titanic.html).
+Code for data load was adapted to be used on shiny server.
+Data was cleaned and sampled into 70% for the model, though sampling in this version is meaningless and wasnt used.
+
+For demonstration purpose, lets complete single prediction. We start with data preparation
+```{r message=F,warning=F}
+library(caret); library(dplyr)
+wd.datapath = paste0(getwd(),"/Data"); 
+wd.init = getwd(); 
+setwd(wd.datapath)
+titanic = read.csv("titanic3.csv", header = TRUE); 
+setwd(wd.init)
+titanic<-mutate(titanic,survived = as.factor(survived))[!is.na(titanic$age)&!is.na(titanic$fare),]
+
+randx = 838 
+set.seed(seed = randx)
+in_train<-createDataPartition(y = titanic$survived,p=0.7,list=F)
+train_set<-titanic[in_train,]
+```
+
+--- .class #id 
+
+## Model and prediction
+ For model used binomial glm. And for prediction we will use the same input parameters as shown on "Interface" slide:
+```{r message=F,warning=F} 
+model<-glm(data=train_set,survived~sex+age+pclass+fare,family = binomial(link="logit"))
+newdata<-data.frame(age=25,sex="male",pclass="1st",fare=100)
+```
+
+     
+And result as shown:
+```{r message=F,warning=F} 
+paste(round(plogis(predict(model,newdata))*100,2),"%")
+``` 
